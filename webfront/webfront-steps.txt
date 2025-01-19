@@ -1,0 +1,239 @@
+***********Installing yarn *******************************
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+source ~/.nvm/nvm.sh
+
+nvm install 18
+nvm use 18
+node -v
+sudo corepack enable
+corepack prepare yarn@stable --activate
+yarn --version
+
+
+curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
+sudo yum install nodejs -y
+
+
+ sudo lsof -i :80
+sudo kill -9 $PID
+
+# Set the environment variable for Flask
+export FLASK_APP=backend/app.py
+
+# Optionally, you can set Flask to production mode
+export FLASK_ENV=production
+
+gunicorn --workers 3 app:app
+
+gunicorn --bind 0.0.0.0:5000 app:app
+
+#background
+nohup gunicorn --bind 0.0.0.0:5000 app:app &
+
+gunicorn --bind 0.0.0.0:5000 wsgi:app
+
+
+
+**************************frontend replication**************************
+ssh ec2-user@<your-ec2-ip-address>
+cd /path/to/your/project/directory
+components]$ sudo cp -r ~/tradiv/webfront/src/components/* ./
+
+
+yarn create react-app my-new-app
+cd my-new-app
+
+sudo corepack enable
+corepack prepare yarn@stable --activate
+
+yarn add plotly.js react-plotly.js axios
+
+mkdir src/components
+
+nano src/components/Dashboard.js
+
+yarn add axios eslint-config-react-app --dev
+yarn add react-router-dom
+
+yarn start
+yarn build
+
+
+*****************************nginx serve *****************************************
+
+cd tradiv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install requests
+pip install numpy
+pip install flask
+pip install flask-cors
+
+
+
+flask run --host=0.0.0.0
+
+cd webfront
+yarn install
+yarn build
+
+sudo cp -r build/* /usr/share/nginx/html/
+
+ls /var/www/yourdomain.com/html
+sudo chmod -R 755 /var/www/yourdomain.com/html
+sudo chown -R www-data:www-data /var/www/yourdomain.com/html
+
+
+sudo nano /etc/nginx/nginx.conf
+
+server {
+    listen 80;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri /index.html;
+    }
+
+    location /api {
+        proxy_pass http://54.242.143.211:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    # Redirect HTTP to HTTPS (optional)
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name yourdomain.com www.yourdomain.com;
+
+    # SSL settings
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # Serve the React app
+    location / {
+        root /var/www/yourdomain.com/html;
+        index index.html;
+        try_files $uri /index.html;  # This is important for React's single-page routing
+    }
+
+    # Proxy requests to the Flask backend
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;  # Proxy to your Flask app
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Optional WebSocket support for real-time features
+    location /ws/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}
+
+
+#Test nginx
+sudo nginx -t
+
+sudo systemctl restart nginx
+
+
+
+****************nake backend persistent **************************
+
+# Navigate to your backend folder
+cd ~/tradiv/backend
+
+# Run Flask with PM2
+pm2 start "flask run --host=0.0.0.0 --port=5000" --name tradiv-backend
+
+# Save PM2 settings to start automatically after reboot
+pm2 save
+
+
+or 
+
+sudo npm install pm2@latest -g
+pm2 start app.py --name tradiv-backend
+pm2 start npm --name tradiv-frontend -- start
+pm2 save
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+sudo yum update
+sudo yum install python3
+sudo pip3 install Flask gunicorn
+
+gunicorn --bind 0.0.0.0:5000 wsgi:app
+
+
+
+ssl********************************************
+
+sudo yum update -y
+sudo amazon-linux-extras install nginx1
+
+sudo yum install -y certbot python3-certbot-nginx
+
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d tradispline.com -d www.tradispline.com
+sudo certbot --nginx -d tradenerves.com -d www.tradenerves.com
+
+sudo nano /etc/nginx/nginx.conf
+
+server {
+    listen 443 ssl; 
+    server_name yourdomain.com www.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    # Rest of your config here
+}
+
+
+Set Up DNS in Route 53
+Go to Route 53 and open your Hosted Zones.
+
+Click on the domain for which you want to set up DNS.
+
+Create a new A record to point to your EC2 public IP:
+
+Type: A
+Name: yourdomain.com
+Value: Your EC2 instance’s public IP address.
+Alias: No
+Create a new A record for www if needed:
+
+Type: A
+Name: www.yourdomain.com
+Value: Your EC2 instance’s public IP.
+
+
+
+****bootstrap ***********
+yarn add bootstrap@v5.3.3
