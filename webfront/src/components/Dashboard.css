@@ -1,0 +1,37 @@
+.playback-controls button,.controls button,
+.trading-controls button {
+    transition: all 0.3s ease;
+    background-color: #1d43ad; /* Default blue */
+}
+
+.playback-controls button:hover,.controls button:hover,
+.trading-controls button:hover {
+    transform: scale(1.1);
+    background-color: #350cea; /* Light blue on hover */
+}
+
+.custom-select {
+    min-width: 350px;
+  }
+  
+  .custom-select select {
+    appearance: none;
+    width: 100%;
+    font-size: 1.15rem;
+    padding: 0.675em 6em 0.675em 1em;
+    background-color: #fff;
+    border: 1px solid #caced1;
+    border-radius: 0.25rem;
+    color: #000;
+    cursor: pointer;
+  }
+
+.center {
+    align-self: baseline;
+    align-items: center;
+    justify-items: center;
+}
+
+body {
+    padding-top: 85px;
+  }

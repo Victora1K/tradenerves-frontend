@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-export function usePlayback(stockData, initialSpeed = 1000) {
+export function usePlayback(stockData, initialSpeed = 200) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [playSpeed, setPlaySpeed] = useState(initialSpeed);
+  const [maxRange, setMaxRange] = useState(1750)
   const [displayData, setDisplayData] = useState({ 
     dates: [], open: [], high: [], low: [], close: [], volume: [] 
   });
@@ -14,14 +15,14 @@ export function usePlayback(stockData, initialSpeed = 1000) {
     dataRef.current = stockData;
     if (stockData.dates.length > 0) {
       setDisplayData({
-        dates: stockData.dates.slice(0, 50),
-        open: stockData.open.slice(0, 50),
-        high: stockData.high.slice(0, 50),
-        low: stockData.low.slice(0, 50),
-        close: stockData.close.slice(0, 50),
-        volume: stockData.volume.slice(0, 50),
+        dates: stockData.dates.slice(0, 250),
+        open: stockData.open.slice(0, 250),
+        high: stockData.high.slice(0, 250),
+        low: stockData.low.slice(0, 250),
+        close: stockData.close.slice(0, 250),
+        volume: stockData.volume.slice(0, 250),
       });
-      setCurrentIndex(50);
+      setCurrentIndex(250);
       
     }
     return () => stopPlayback();
@@ -42,7 +43,11 @@ export function usePlayback(stockData, initialSpeed = 1000) {
     const id = setInterval(() => {
       setCurrentIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
-        if (nextIndex < dataRef.current.dates.length) {
+        if (dataRef.current.dates.length < maxRange) {
+          setMaxRange(1200)
+      
+        }
+        if (nextIndex < maxRange) {
           setDisplayData({
             dates: dataRef.current.dates.slice(0, nextIndex),
             open: dataRef.current.open.slice(0, nextIndex),
@@ -73,19 +78,19 @@ export function usePlayback(stockData, initialSpeed = 1000) {
     stopPlayback();
     setCurrentIndex(0);
     setDisplayData({ 
-      dates: dataRef.current.dates.slice(0,50),
-      open: dataRef.current.open.slice(0,50),
-      high: dataRef.current.high.slice(0,50),
-      low: dataRef.current.low.slice(0,50),
-      close: dataRef.current.close.slice(0,50),
-      volume: dataRef.current.volume.slice(0,50),
+      dates: dataRef.current.dates.slice(0,250),
+      open: dataRef.current.open.slice(0,250),
+      high: dataRef.current.high.slice(0,250),
+      low: dataRef.current.low.slice(0,250),
+      close: dataRef.current.close.slice(0,250),
+      volume: dataRef.current.volume.slice(0,250),
     });
   };
 
   const adjustSpeed = (faster) => {
     setPlaySpeed(prev => {
       const newSpeed = faster ? prev / 2 : prev * 2;
-      return Math.max(Math.min(newSpeed, 2000), 125);
+      return Math.max(Math.min(newSpeed, 2000), 50);
     });
   };
 

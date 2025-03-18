@@ -1,19 +1,19 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Tradenerves",
+  "name": "Simulate Trade Scenarios",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "hammer.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "hammer192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "hammer512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
